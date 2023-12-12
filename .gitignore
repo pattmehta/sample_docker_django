@@ -1,6 +1,7 @@
 # Created by https://www.gitignore.io
 
 djenv/
+dst/
 
 ### OSX ###
 .DS_Store

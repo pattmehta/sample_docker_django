@@ -5,8 +5,8 @@ class EnvConfig:
 
     def __init__(self):
         self._config = {
-            **dotenv_values(".env"),  # load shared development variables
-            **dotenv_values(".env.secret"),  # load sensitive variables
+            **dotenv_values("env/.env"),  # load shared development variables
+            **dotenv_values("env/.env.secret"),  # load sensitive variables
             **os.environ,  # override loaded values with environment variables
         }
         self._keys = list(self._config.keys())
