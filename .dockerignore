@@ -1,5 +1,14 @@
-env/
+# Host
+*env/
 scripts/host/
+
+
+# Docker
+docker-compose.yml
+Dockerfile
+.docker
+.dockerignore
+
 
 ### Git ###
 .gitignore
