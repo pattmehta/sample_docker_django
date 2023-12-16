@@ -9,6 +9,10 @@ from datetime import timedelta
 from envconfig import envconfig
 
 
+SAMPLE_DATA_GENERATORS = (
+    'temphapis.generators'
+)
+
 DEBUG = True
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = envconfig.value('SECRET_KEY')
@@ -39,7 +43,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'rest_framework_simplejwt.token_blacklist',
-    'axes'
+    'axes',
+    'django_sample_generator'
 ]
 
 

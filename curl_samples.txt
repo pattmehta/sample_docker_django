@@ -1,0 +1,7 @@
+curl -X POST 127.0.0.1:8000/api/token/ -d "username=user_first&password=pwd"
+ 
+curl -X POST -d "count=5" -H "Authorization: Bearer tokenstring" 127.0.0.1:8000/route/
+ 
+curl -G 127.0.0.1:8000/api/history/?count=2
+ 
+curl -X POST -d "count=1" -H "Authorization: Bearer badtoken" 127.0.0.1:8000/api/user_history/
