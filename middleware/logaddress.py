@@ -1,0 +1,18 @@
+from django.http import Http404, HttpResponse
+
+class LogAddressMiddleware:
+    
+    def __init__(self, get_response):
+        self.get_response = get_response # one-time config and init
+
+    def __call__(self, request):
+        # executed before the view (and later middleware) are called
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        ip = x_forwarded_for.split(',')[0] if x_forwarded_for else request.META.get('REMOTE_ADDR')
+        print('request from ip',ip)
+        response = self.get_response(request)
+        # executed after the view is called
+        return response
+
+    def process_exception(self, request, exception):
+        if isinstance(exception, Http404): return HttpResponse(str(exception), status=404)
