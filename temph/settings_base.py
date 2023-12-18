@@ -25,6 +25,14 @@ LOGGING = {
     },
 }
 
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "unique-snowflake",
+        "TIMEOUT": envconfig.value('CACHE_TIMEOUT_MIN') * 60 # set timeout in seconds
+    }
+}
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = envconfig.value('SECRET_KEY')
 ALLOWED_HOSTS = ['127.0.0.1','localhost','0.0.0.0']
@@ -41,12 +49,6 @@ STATICFILES_DIRS = (str(BASE_DIR.joinpath('static')),)
 STATIC_URL = 'static/'
 
 
-AUTHENTICATION_BACKENDS = [
-    # AxesStandaloneBackend should be the first
-    'axes.backends.AxesStandaloneBackend',
-]
-
-
 INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -54,17 +56,14 @@ INSTALLED_APPS = [
     'temphapis.apps.TemphapisConfig',
     'rest_framework',
     'drf_yasg',
-    'rest_framework_simplejwt.token_blacklist',
-    'axes'
+    'rest_framework_simplejwt.token_blacklist'
 ]
 
 
 MIDDLEWARE = [
     'middleware.logaddress.LogAddressMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    # AxesMiddleware should be the last
-    'axes.middleware.AxesMiddleware'
+    'django.middleware.common.CommonMiddleware'
 ]
 
 

@@ -1,4 +1,5 @@
 from django.http import Http404, HttpResponse
+from middleware.utils import utils
 
 class LogAddressMiddleware:
     
@@ -7,8 +8,7 @@ class LogAddressMiddleware:
 
     def __call__(self, request):
         # executed before the view (and later middleware) are called
-        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-        ip = x_forwarded_for.split(',')[0] if x_forwarded_for else request.META.get('REMOTE_ADDR')
+        ip = utils.get_ip(request)
         print('request from ip',ip)
         response = self.get_response(request)
         # executed after the view is called
