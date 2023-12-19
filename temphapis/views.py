@@ -20,6 +20,11 @@ from middleware.utils import utils
 
 
 def token_required(func):
+    '''
+    todo: combine with try_auth_with_track_attempts and make auth_callback types
+    such as with JWTAuthentication or username/password parameters to
+    a new decorator @auth_attempt('jwt|pwd')
+    '''
     @wraps(func)
     def inner(request, *args, **kwargs):
         try:
@@ -97,12 +102,15 @@ def try_auth_with_track_attempts(request,auth_callback):
     error_response = lambda: {"success":False,"auth_failures":auth_failures()}
     if username is None or len(username) == 0: return error_response()
     users = User.objects.all()
-    try: users.get(username=username)
+    request_user = None
+    try: request_user = users.get(username=username)
     except Exception: raise Exception("user not found!")
     result = None
     try: result = auth_callback(request)
     except Exception as e: print('invalid token or token expired') if isinstance(e,InvalidToken) else print('other token error')
     if result is not None:
+        result_user,_ = result
+        if request_user.username != result_user.username: raise Exception("user not found!")
         if auth_failures() >= int(envconfig.value('AUTH_FAIL_ATTEMPTS')):
             raise Exception("auth lockout: previous failed attempts not reset!")
         cache.set(auth_failure_key, 0)

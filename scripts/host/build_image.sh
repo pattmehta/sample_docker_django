@@ -4,7 +4,7 @@ P3PATH=`which python3`
 PYTHONCMD=""
 
 if [ -z "${IMGNAME}" ]; then
-    echo "please enter image name as first param"
+    echo "please enter image-name as first param"
     exit 1
 fi
 
