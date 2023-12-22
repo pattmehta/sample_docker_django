@@ -7,24 +7,34 @@ from dbservices.dbutils import dbutils
 # from rest_framework.decorators import throttle_classes
 # from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 from rest_framework_simplejwt.tokens import RefreshToken
-
 from django.contrib.auth.models import User
-
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from functools import wraps
+# imports for login lockout
+from rest_framework_simplejwt.exceptions import InvalidToken
+from django.urls import reverse
+from django.core.cache import cache
+from envconfig import envconfig
+from middleware.utils import utils
+
 
 def token_required(func):
+    '''
+    todo: combine with try_auth_with_track_attempts and make auth_callback types
+    such as with JWTAuthentication or username/password parameters to
+    a new decorator @auth_attempt('jwt|pwd')
+    '''
     @wraps(func)
     def inner(request, *args, **kwargs):
-        invalid_response = HttpResponse("could not auth\n", status=401)
         try:
-            auth = JWTAuthentication().authenticate(request)
-            if auth is not None:
-                return func(request, *args, **kwargs)
-            else:
-                return invalid_response
-        except Exception:
-            return invalid_response
+            auth_callback = JWTAuthentication().authenticate
+            result = try_auth_with_track_attempts(request, auth_callback)
+            auth_failures = result["auth_failures"]
+            print("auth_failures", auth_failures)
+            return func(request, *args, **kwargs) if result["success"] else HttpResponse(f"could not auth (auth_failures:{auth_failures})\n", status=401)
+        except Exception as e:
+            reset_url = f"{request.scheme}://{request.get_host()}{reverse('reset-lockout')}"
+            return HttpResponse(f"error: {e}\nvisit {reset_url} with username to reset lockout if login limit was exceeded\n", status=401)
     return inner
 
 @api_view(['GET'])
@@ -82,3 +92,40 @@ def get_tokens_for_user(user):
             }
         }
     )
+
+def try_auth_with_track_attempts(request,auth_callback):
+    ip_address = utils.get_ip(request)
+    username = request.POST.get('username')
+    auth_failure_key = f"LOGIN_FAILURES_{ip_address}_{username}"
+    auth_failures = lambda: cache.get(auth_failure_key) or 0
+    error_response = lambda: {"success":False,"auth_failures":auth_failures()}
+    if username is None or len(username) == 0: return error_response()
+    users = User.objects.all()
+    request_user = None
+    try: request_user = users.get(username=username)
+    except Exception: raise Exception("user not found!")
+    result = None
+    try: result = auth_callback(request)
+    except Exception as e: print('invalid token or token expired') if isinstance(e,InvalidToken) else print('other token error')
+    if result is not None:
+        result_user,_ = result
+        if request_user.username != result_user.username: raise Exception("user not found!")
+        if auth_failures() >= int(envconfig.value('AUTH_FAIL_ATTEMPTS')):
+            raise Exception("auth lockout: previous failed attempts not reset!")
+        cache.set(auth_failure_key, 0)
+        return {"success":True,"auth_failures":auth_failures()}
+    else:
+        cache.set(auth_failure_key, auth_failures() + 1)
+        if auth_failures() >= int(envconfig.value('AUTH_FAIL_ATTEMPTS')): raise Exception("auth lockout: too many failed attempts!")
+        return error_response()
+
+@api_view(['POST'])
+def reset_lockout(request: HttpRequest):
+    username = request.POST.get('username')
+    ip_address = utils.get_ip(request)
+    auth_failure_key = f"LOGIN_FAILURES_{ip_address}_{username}"
+    if cache.has_key(auth_failure_key):
+        cache.set(auth_failure_key, 0)
+        return HttpResponse("lockout is reset!\n")
+    else:
+        return HttpResponse("try again later!\n")

@@ -10,9 +10,33 @@ from envconfig import envconfig
 
 
 DEBUG = True
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "DEBUG",
+    },
+}
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "unique-snowflake",
+        "TIMEOUT": envconfig.value('CACHE_TIMEOUT_MIN') * 60 # set timeout in seconds
+    }
+}
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = envconfig.value('SECRET_KEY')
-ALLOWED_HOSTS = ['127.0.0.1','localhost']
+ALLOWED_HOSTS = ['127.0.0.1','localhost','0.0.0.0']
+ALLOWED_HOSTS.extend([f'172.17.0.{i}' for i in range(2,100)]) # 2 ips reserved for subnet(0), gateway(1)
 ROOT_URLCONF = 'temph.urls'
 WSGI_APPLICATION = 'temph.wsgi.application'
 LANGUAGE_CODE = 'en-us'
@@ -25,12 +49,6 @@ STATICFILES_DIRS = (str(BASE_DIR.joinpath('static')),)
 STATIC_URL = 'static/'
 
 
-AUTHENTICATION_BACKENDS = [
-    # AxesStandaloneBackend should be the first
-    'axes.backends.AxesStandaloneBackend',
-]
-
-
 INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -38,16 +56,14 @@ INSTALLED_APPS = [
     'temphapis.apps.TemphapisConfig',
     'rest_framework',
     'drf_yasg',
-    'rest_framework_simplejwt.token_blacklist',
-    'axes'
+    'rest_framework_simplejwt.token_blacklist'
 ]
 
 
 MIDDLEWARE = [
+    'middleware.logaddress.LogAddressMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    # AxesMiddleware should be the last
-    'axes.middleware.AxesMiddleware'
+    'django.middleware.common.CommonMiddleware'
 ]
 
 

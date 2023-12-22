@@ -1,0 +1,9 @@
+curl -X POST 127.0.0.1:8092/api/token/ -d "username=user_first&password=pwd"
+
+curl -X POST -d "count=5" -H "Authorization: Bearer tokenstring" 127.0.0.1:8092/route/
+
+curl -G 127.0.0.1:8092/api/history/?count=2
+
+curl -X POST -d "count=1&username=user_first" -H "Authorization: Bearer badtoken" 127.0.0.1:8092/api/user_history/
+
+curl -X POST -d "username=user_first" 127.0.0.1:8092/api/reset_lockout/

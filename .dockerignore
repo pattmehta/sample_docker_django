@@ -1,8 +1,19 @@
-# Created by https://www.gitignore.io
+# Host
+*env/
+scripts/host/
 
-djenv/
-env/
-dst/
+
+# Docker
+docker-compose.yml
+Dockerfile
+.docker
+.dockerignore
+
+
+### Git ###
+.gitignore
+.git/
+
 
 ### OSX ###
 .DS_Store
@@ -38,6 +49,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+env/
 build/
 develop-eggs/
 dist/
@@ -87,5 +99,3 @@ target/
 *.pyc
 __pycache__/
 local_settings.py
-
-.env.secret
