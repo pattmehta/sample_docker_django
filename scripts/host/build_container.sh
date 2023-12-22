@@ -11,5 +11,7 @@ if [ -z "${PORTMAP}" ]; then
     exit 1
 fi
 
-docker run -id --name ${IMGNAME}_other ${IMGNAME}
-docker run -id --name ${IMGNAME}_service -p ${PORTMAP} ${IMGNAME}
+CONTAINERPREFIX="${IMGNAME//\//_}" # replace escaped slash '/' with '_'
+
+docker run -id --name ${CONTAINERPREFIX}_other ${IMGNAME}
+docker run -id --name ${CONTAINERPREFIX}_service -p ${PORTMAP} ${IMGNAME}

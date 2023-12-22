@@ -16,10 +16,9 @@ template for `.env.secret`
 
 ### docker
 
+- > bash scripts/docker_clean.sh
 - > bash scripts/host/build_image.sh djapp
-- > docker run --name djapp_service -id -p 80:8083 djapp
-
-### axes
+- > bash scripts/host/build_container.sh pm1992outlook/djapp 80:8092
 
 #### running containers
 
