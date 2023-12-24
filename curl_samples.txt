@@ -7,3 +7,6 @@ curl -G 127.0.0.1:8092/api/history/?count=2
 curl -X POST -d "count=1&username=user_first" -H "Authorization: Bearer badtoken" 127.0.0.1:8092/api/user_history/
 
 curl -X POST -d "username=user_first" 127.0.0.1:8092/api/reset_lockout/
+
+note: following curl request for upload_image was erroneous, using other clients was successful
+curl -X POST -d "username=user_first&img_data=data:image/png;base64,longdatauristring" -H "Authorization: Bearer tokenstring" 127.0.0.1:8092/api/upload_image/
