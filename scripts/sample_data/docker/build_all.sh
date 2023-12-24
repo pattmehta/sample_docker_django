@@ -2,15 +2,16 @@
 # - run from root folder as `bash ./scripts/...`
 # - docker WORKDIR is /app
 # - PWD is Pathname of the current Working Directory
+# - ensure DBFOLDERABS is inside an ignored folder
+# - scripts/sample_data/docker/ is added to dockerignore
 
 
-IMGNAME=`basename $0`
+IMGNAME="sample_data"
 DBFOLDER=$1
 WORKDIR="/app"
 
 if [ -z "${DBFOLDER}" ]; then
-    echo "please enter db-folder as first param"
-    exit 1
+    DBFOLDER="dbsample"
 fi
 
 DBFOLDERABS=$PWD/`dirname $0`"/${DBFOLDER}"
@@ -36,7 +37,7 @@ touch $CLEANSCRIPTABS
 chmod +x $CLEANSCRIPTABS
 
 cat > $CLEANSCRIPTABS << EOL
-echo "stopping and removing all containers"
+echo "stopping and removing container $CONTAINERNAME"
 docker stop $CONTAINERNAME && docker rm $CONTAINERNAME
 echo "removing image ${IMGNAME}"
 docker image rm ${IMGNAME}

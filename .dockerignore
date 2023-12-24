@@ -1,6 +1,7 @@
 # Host
 *env/
 scripts/host/
+scripts/sample_data/docker/
 .env*
 media/images/*.png
 db.sqlite3
