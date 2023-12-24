@@ -39,6 +39,11 @@ with container named `djapp_service`, requests made from `host`, `djapp_other` (
     - > 127.0.0.1 (local ip)
     - > localhost or 127.0.0.1
 
+
+#### sample data
+
+![build steps for db.sqlite3](/readme_img/scripts.png)
+
 ### troubleshoot
 
 - sending request from container `a` to `b`
