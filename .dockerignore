@@ -1,16 +1,23 @@
-# Created by https://www.gitignore.io
-
-
 # Host
-djenv/
-env/
-dst/
+*env/
+scripts/host/
 .env*
 media/images/*.png
-db.sqlite3
 
 
-### OSX ###
+# Docker
+docker-compose.yml
+Dockerfile
+.docker
+.dockerignore
+
+
+# Git
+.gitignore
+.git/
+
+
+# OSX
 .DS_Store
 .AppleDouble
 .LSOverride
@@ -44,6 +51,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+env/
 build/
 develop-eggs/
 dist/

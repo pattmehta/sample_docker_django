@@ -7,3 +7,7 @@ class History(models.Model):
 class UserHistory(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     item = models.CharField(max_length=100)
+
+class Image(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    thumbnail = models.SlugField(null=True, blank=True, max_length=100)

@@ -9,14 +9,36 @@ from datetime import timedelta
 from envconfig import envconfig
 
 
-SAMPLE_DATA_GENERATORS = (
-    'temphapis.generators'
-)
-
 DEBUG = True
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "DEBUG",
+    },
+}
+
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "unique-snowflake",
+        "TIMEOUT": envconfig.value('CACHE_TIMEOUT_MIN') * 60 # set timeout in seconds
+    }
+}
+
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = envconfig.value('SECRET_KEY')
-ALLOWED_HOSTS = ['127.0.0.1','localhost']
+ALLOWED_HOSTS = ['127.0.0.1','localhost','0.0.0.0','10.0.2.2']
+ALLOWED_HOSTS.extend([f'172.17.0.{i}' for i in range(2,100)]) # 2 ips reserved for subnet(0), gateway(1)
 ROOT_URLCONF = 'temph.urls'
 WSGI_APPLICATION = 'temph.wsgi.application'
 LANGUAGE_CODE = 'en-us'
@@ -27,6 +49,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField' # Default primary key field
 # Static files (CSS, JavaScript, Images)
 STATICFILES_DIRS = (str(BASE_DIR.joinpath('static')),)
 STATIC_URL = 'static/'
+MEDIA_URL = 'media/'
+MEDIA_ROOT = str(BASE_DIR.joinpath('media'))
 
 
 INSTALLED_APPS = [
@@ -36,12 +60,12 @@ INSTALLED_APPS = [
     'temphapis.apps.TemphapisConfig',
     'rest_framework',
     'drf_yasg',
-    'rest_framework_simplejwt.token_blacklist',
-    'django_sample_generator'
+    'rest_framework_simplejwt.token_blacklist'
 ]
 
 
 MIDDLEWARE = [
+    'middleware.logaddress.LogAddressMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.middleware.common.CommonMiddleware'
 ]
@@ -139,3 +163,8 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
+
+
+SAMPLE_DATA_GENERATORS = (
+    'temphapis.generators'
+)
