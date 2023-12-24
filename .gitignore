@@ -1,10 +1,14 @@
 # Created by https://www.gitignore.io
 
+
+# Host
 djenv/
 env/
 dst/
+.env*
+media/images/*.png
 
-### OSX ###
+# OSX
 .DS_Store
 .AppleDouble
 .LSOverride
@@ -28,8 +32,8 @@ Temporary Items
 .apdisk
 
 
-### Python ###
-# Byte-compiled / optimized / DLL files
+# Python
+#  Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 
@@ -81,12 +85,9 @@ docs/_build/
 target/
 
 
-### Django ###
+# Django
 *.log
 *.pot
 *.pyc
 __pycache__/
 local_settings.py
-
-.env.secret
-db.sqlite3
