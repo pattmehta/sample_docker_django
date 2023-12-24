@@ -1,8 +1,13 @@
 # Created by https://www.gitignore.io
 
+
+# Host
 djenv/
 env/
 dst/
+.env*
+media/images/*.png
+
 
 ### OSX ###
 .DS_Store
@@ -87,6 +92,3 @@ target/
 *.pyc
 __pycache__/
 local_settings.py
-
-.env.secret
-db.sqlite3

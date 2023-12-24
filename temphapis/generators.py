@@ -10,6 +10,6 @@ class UserHistoryGenerator(generator.ModelGenerator):
         model = UserHistory
 
 generators = [
-    HistoryGenerator(10),
+    HistoryGenerator(100),
     UserHistoryGenerator(100)
 ]

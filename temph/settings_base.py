@@ -29,12 +29,6 @@ STATICFILES_DIRS = (str(BASE_DIR.joinpath('static')),)
 STATIC_URL = 'static/'
 
 
-AUTHENTICATION_BACKENDS = [
-    # AxesStandaloneBackend should be the first
-    'axes.backends.AxesStandaloneBackend',
-]
-
-
 INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -43,16 +37,13 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'rest_framework_simplejwt.token_blacklist',
-    'axes',
     'django_sample_generator'
 ]
 
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    # AxesMiddleware should be the last
-    'axes.middleware.AxesMiddleware'
+    'django.middleware.common.CommonMiddleware'
 ]
 
 
