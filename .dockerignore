@@ -3,6 +3,7 @@
 scripts/host/
 .env*
 media/images/*.png
+db.sqlite3
 
 
 # Docker
