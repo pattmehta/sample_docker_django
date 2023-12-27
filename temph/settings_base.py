@@ -60,7 +60,8 @@ INSTALLED_APPS = [
     'temphapis.apps.TemphapisConfig',
     'rest_framework',
     'drf_yasg',
-    'rest_framework_simplejwt.token_blacklist'
+    'rest_framework_simplejwt.token_blacklist',
+    'django_sample_generator'
 ]
 
 
@@ -165,6 +166,6 @@ SIMPLE_JWT = {
 }
 
 
-SAMPLE_DATA_GENERATORS = (
+SAMPLE_DATA_GENERATORS = [
     'temphapis.generators'
-)
+]
