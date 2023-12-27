@@ -13,5 +13,5 @@ fi
 
 CONTAINERPREFIX="${IMGNAME//\//_}" # replace escaped slash '/' with '_'
 
-docker run -id --name ${CONTAINERPREFIX}_other ${IMGNAME}
 docker run -id --name ${CONTAINERPREFIX}_service -p ${PORTMAP} ${IMGNAME}
+docker run -id --name ${CONTAINERPREFIX}_other ${IMGNAME}

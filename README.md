@@ -16,13 +16,13 @@ template for `.env.secret`
 
 ### docker
 
-- > bash scripts/docker_clean.sh
+- > bash scripts/host/docker_clean.sh
 - > bash scripts/host/build_image.sh djapp
-- > bash scripts/host/build_container.sh pm1992outlook/djapp 80:8092
+- > bash scripts/host/build_container.sh pm1992outlook/djapp 80:8083 (80:8083 is an example only)
 
 #### running containers
 
-> docker run --name djapp_service -id -p 80:8083 djapp
+> docker run --name djapp_service -id -p 80:8083 djapp (80:8083 is an example only)
 
 with container named `djapp_service`, requests made from `host`, `djapp_other` (container), `local` (container `djapp_service`)
 
@@ -44,6 +44,24 @@ with container named `djapp_service`, requests made from `host`, `djapp_other` (
 
 ![build steps for db.sqlite3](/readme_img/scripts.png)
 
+> setup db on docker:
+- **setup image/container with volume** `setup on host`
+- **run image** `docker exec -it sample_data_service bash`
+- **setup db using build_db** `root@longstring:/app# bash scripts/sample_data/build_db.sh temph.settings_base scripts/sample_data/ docker`
+- **(optional)** `root@longstring:/app# cp db.sqlite3 dbsample/`
+
+> setup db on host:
+- **(optional)** `python manage.py flush --settings=temph.settings_base && rm db.sqlite3`
+- **setup db using build_db** `bash scripts/sample_data/build_db.sh temph.settings_base scripts/sample_data`
+- > db-output with `sqlite` file is at the `root` folder
+
+> setup db on docker via host:
+- **(optional)** `bash scripts/sample_data/docker/docker_clean.sh`
+- **setup image/container with volume** `bash scripts/sample_data/docker/build_all_host.sh /app`
+- **setup db on docker using build_db** `docker exec -it sample_data_service bash -c "/app/scripts/sample_data/build_db.sh temph.settings_base scripts/sample_data docker"`
+- > default db-output path with `sqlite` file (on host) is `scripts/sample_data/docker/dbsample`
+
+
 ### troubleshoot
 
 - sending request from container `a` to `b`
@@ -63,5 +81,5 @@ with container named `djapp_service`, requests made from `host`, `djapp_other` (
         - check if `runserver` ip is `0.0.0.0`
         - check if `ALLOWED_HOSTS` is properly configured
         - if above is fixed, check if port mapping is enabled on the container
-        - create/run a new container with port mapping `docker run -id -p 80:8083 djapp`
+        - create/run a new container with port mapping `docker run -id -p 80:8083 djapp` (80:8083 is an example only)
         - > note: use port `8083` in `runserver 0.0.0.0:8083` for the server created above
