@@ -11,7 +11,9 @@ if [ -z "${PORTMAP}" ]; then
     exit 1
 fi
 
+# example remote image with tag repoprofilename/somerepo:sometag
 CONTAINERPREFIX="${IMGNAME//\//_}" # replace escaped slash '/' with '_'
+CONTAINERPREFIX="${CONTAINERPREFIX//\:/_}" # replace escaped colon ':' with '_'
 
 docker run -id --name ${CONTAINERPREFIX}_other ${IMGNAME}
 docker run -id --name ${CONTAINERPREFIX}_service -p ${PORTMAP} ${IMGNAME}
