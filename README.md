@@ -13,8 +13,6 @@ template for `.env.secret`
 - DBPASS=app_password
 - SECRET_KEY='longstring'
 - JWT_SIGNING_KEY='longstring'
-<<<<<<< HEAD
-=======
 
 ### docker
 
@@ -62,4 +60,3 @@ with container named `djapp_service`, requests made from `host`, `djapp_other` (
         - if above is fixed, check if port mapping is enabled on the container
         - create/run a new container with port mapping `docker run -id -p 80:8083 djapp`
         - > note: use port `8083` in `runserver 0.0.0.0:8083` for the server created above
->>>>>>> docker
