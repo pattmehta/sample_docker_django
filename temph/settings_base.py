@@ -25,6 +25,7 @@ LOGGING = {
     },
 }
 
+
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
@@ -33,9 +34,10 @@ CACHES = {
     }
 }
 
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = envconfig.value('SECRET_KEY')
-ALLOWED_HOSTS = ['127.0.0.1','localhost','0.0.0.0']
+ALLOWED_HOSTS = ['127.0.0.1','localhost','0.0.0.0','10.0.2.2']
 ALLOWED_HOSTS.extend([f'172.17.0.{i}' for i in range(2,100)]) # 2 ips reserved for subnet(0), gateway(1)
 ROOT_URLCONF = 'temph.urls'
 WSGI_APPLICATION = 'temph.wsgi.application'
@@ -47,6 +49,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField' # Default primary key field
 # Static files (CSS, JavaScript, Images)
 STATICFILES_DIRS = (str(BASE_DIR.joinpath('static')),)
 STATIC_URL = 'static/'
+MEDIA_URL = 'media/'
+MEDIA_ROOT = str(BASE_DIR.joinpath('media'))
 
 
 INSTALLED_APPS = [

@@ -1,6 +1,8 @@
 # Host
 *env/
 scripts/host/
+.env*
+media/images/*.png
 
 
 # Docker
@@ -10,12 +12,12 @@ Dockerfile
 .dockerignore
 
 
-### Git ###
+# Git
 .gitignore
 .git/
 
 
-### OSX ###
+# OSX
 .DS_Store
 .AppleDouble
 .LSOverride
@@ -39,8 +41,8 @@ Temporary Items
 .apdisk
 
 
-### Python ###
-# Byte-compiled / optimized / DLL files
+# Python
+#  Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 
@@ -93,7 +95,7 @@ docs/_build/
 target/
 
 
-### Django ###
+# Django
 *.log
 *.pot
 *.pyc
