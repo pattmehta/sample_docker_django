@@ -16,7 +16,9 @@ from django.urls import reverse
 from django.core.cache import cache
 from envconfig import envconfig
 from middleware.utils import utils
-
+from datauri import DataURI
+from django.conf import settings
+from pathlib import Path
 
 
 def token_required(func):
@@ -130,3 +132,21 @@ def reset_lockout(request: HttpRequest):
         return HttpResponse("lockout is reset!\n")
     else:
         return HttpResponse("try again later!\n")
+
+@token_required
+@api_view(['POST'])
+def upload_image(request: HttpRequest):
+    img_data = request.POST.get('img_data')
+    username = request.POST.get('username')
+    try:
+        if img_data is not None and username is not None:
+            img_uri = DataURI(img_data)
+            file_ext = img_uri.mimetype.split('/')[1]
+            output_filename = Path(settings.MEDIA_ROOT).resolve().joinpath('images').joinpath(f'{username}_img.{file_ext}')
+            with open(output_filename,'wb') as img_file: img_file.write(img_uri.data)
+            return HttpResponse("image uploaded", status=200)
+        else:
+            return HttpResponse("invalid params", status=400)
+    except Exception as e:
+        print(f"exception: {e}")
+        return HttpResponse("could not upload image", status=500)
