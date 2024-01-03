@@ -2,6 +2,7 @@
 *env/
 scripts/host/
 scripts/cloud/*.pem
+scripts/cloud/setup-aws.sh
 .env*
 media/images/*.png
 
