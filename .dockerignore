@@ -1,6 +1,7 @@
 # Host
 *env/
 scripts/host/
+scripts/cloud/*.pem
 .env*
 media/images/*.png
 
