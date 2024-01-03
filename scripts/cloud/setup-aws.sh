@@ -58,7 +58,7 @@ sudo docker pull \${IMGNAME}:latest
 USERADDED=\`less /etc/group | grep docker\`
 if [[ "\${USERADDED}" =~ ^.*${ECUSERNAME}\$ ]]; then
     sudo docker image ls
-    scripts/build_container.sh \${IMGNAME}:latest ${PORTMAP}
+    sudo scripts/build_container.sh \${IMGNAME}:latest ${PORTMAP}
     sudo docker container ls
 else
     echo "user not added to docker group, cannot run docker"
