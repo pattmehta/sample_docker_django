@@ -1,4 +1,4 @@
-# note: run from root folder as `bash ./scripts/...`
+# note: run from root folder as `bash scripts/...`
 IMGNAME=$1
 P3PATH=`which python3`
 PYTHONCMD=""

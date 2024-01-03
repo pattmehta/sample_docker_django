@@ -1,5 +1,5 @@
-# note: run from root folder as `bash ./scripts/...`
-# e.g. bash scripts/cloud/setup-aws.sh pathtopem username hostname portmapfordjangoserver
+# note: run from root folder as `bash scripts/...`
+# e.g. bash scripts/cloud/setup-aws.sh pathtopem username hostname portmappingfordjangoserver
 
 PATHTOPEMFILE=$1
 ECUSERNAME=$2
@@ -22,7 +22,7 @@ if [ -z "${ECHOST}" ]; then
 fi
 
 if [ -z "${PORTMAP}" ]; then
-    echo "please enter port-mapping (e.g. 80:8092) as fourth param"
+    echo "please enter port-mapping for django server (e.g. 80:8092) as fourth param"
     exit 1
 fi
 
@@ -58,7 +58,7 @@ sudo docker pull \${IMGNAME}:latest
 USERADDED=\`less /etc/group | grep docker\`
 if [[ "\${USERADDED}" =~ ^.*${ECUSERNAME}\$ ]]; then
     sudo docker image ls
-    "${DSTDIR}"/build_container.sh \${IMGNAME}:latest ${PORTMAP}
+    scripts/build_container.sh \${IMGNAME}:latest ${PORTMAP}
     sudo docker container ls
 else
     echo "user not added to docker group, cannot run docker"

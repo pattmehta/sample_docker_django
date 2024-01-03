@@ -7,7 +7,7 @@ if [ -z "${IMGNAME}" ]; then
 fi
 
 if [ -z "${PORTMAP}" ]; then
-    echo "please enter port-mapping (e.g. 80:8092) as second param"
+    echo "please enter port-mapping for django server (e.g. 80:8092) as second param"
     exit 1
 fi
 
