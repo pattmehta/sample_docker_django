@@ -24,6 +24,8 @@ template for `.env.secret`
 
 > docker run --name djapp_service -id -p 80:8083 djapp
 
+##### requests
+
 with container named `djapp_service`, requests made from `host`, `djapp_other` (container), `local` (container `djapp_service`)
 
 - host
@@ -38,6 +40,17 @@ with container named `djapp_service`, requests made from `host`, `djapp_other` (
     - curl -G localhost:port_number/api/
     - > 127.0.0.1 (local ip)
     - > localhost or 127.0.0.1
+
+### cloud
+
+- currently contains script to bootstrap django app image on aws
+    - the app execution is configurable via a script, see example below
+    - > docker exec -itd containername bash `-c "scripts/init_server.sh optiona optionb optionc"`
+- bootstrapping simply does a docker setup
+    - installing docker with a package manager
+    - starting the docker service as a superuser
+    - pulling the latest image
+    - adding user to the docker group (optional)
 
 ### troubleshoot
 

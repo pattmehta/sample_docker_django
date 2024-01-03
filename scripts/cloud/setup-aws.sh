@@ -1,5 +1,5 @@
 # note: run from root folder as `bash ./scripts/...`
-# e.g. bash scripts/cloud/setup.sh pathtopem username hostname
+# e.g. bash scripts/cloud/setup-aws.sh pathtopem username hostname portmapfordjangoserver
 
 PATHTOPEMFILE=$1
 ECUSERNAME=$2
