@@ -67,7 +67,7 @@ else
 fi
 EOL
 
-RUNFILENAME="${DSTDIR}"/run_container.sh
+RUNFILENAME="${DSTDIR}"/run_server.sh
 touch $RUNFILENAME
 chmod +x $RUNFILENAME
 cat > $RUNFILENAME << EOL
