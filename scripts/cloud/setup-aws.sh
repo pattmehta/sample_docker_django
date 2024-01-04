@@ -1,10 +1,10 @@
 # note: run from root folder as `bash scripts/...`
-# e.g. bash scripts/cloud/setup-aws.sh pathtopem username hostname portmappingfordjangoserver
+# e.g. bash scripts/cloud/setup-aws.sh pathtopem username hostname portfordjangoserver
 
 PATHTOPEMFILE=$1
 ECUSERNAME=$2
 ECHOST=$3 # e.g. public ip address like 50.17.123.456
-PORTMAP=$4 # e.g. 80:8092
+PORT=$4 # e.g. 8192
 
 if [ -z "${PATHTOPEMFILE}" ]; then
     echo "please enter path-to-pem-file as first param"
@@ -21,8 +21,8 @@ if [ -z "${ECHOST}" ]; then
     exit 1
 fi
 
-if [ -z "${PORTMAP}" ]; then
-    echo "please enter port-mapping for django server (e.g. 80:8092) as fourth param"
+if [ -z "${PORT}" ]; then
+    echo "please enter port for django server (e.g. 8192) as fourth param"
     exit 1
 fi
 
@@ -53,13 +53,14 @@ sudo yum install -y docker
 # might require terminal restart
 sudo usermod -aG docker ${ECUSERNAME}
 sudo service docker start
-sudo docker pull \${IMGNAME}:latest
+sudo docker pull \${IMGNAME}:amd
 
 USERADDED=\`less /etc/group | grep docker\`
 if [[ "\${USERADDED}" =~ ^.*${ECUSERNAME}\$ ]]; then
     sudo docker image ls
-    sudo scripts/build_container.sh \${IMGNAME}:latest ${PORTMAP}
-    sudo docker container ls
+    # pass blank value, i.e. - for PORTMAP, and 1 for ISCLOUD
+    sudo scripts/build_container.sh \${IMGNAME}:amd - 1
+    sudo docker container ls -a
 else
     echo "user not added to docker group, cannot run docker"
     exit 1
@@ -67,7 +68,6 @@ fi
 EOL
 
 RUNFILENAME="${DSTDIR}"/run_container.sh
-PORT=`echo ${PORTMAP} | cut -d ":" -f 2`
 touch $RUNFILENAME
 chmod +x $RUNFILENAME
 cat > $RUNFILENAME << EOL

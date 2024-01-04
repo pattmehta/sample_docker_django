@@ -1,12 +1,14 @@
 IMGNAME=$1
 PORTMAP=$2
+ISCLOUD=$3
 
 if [ -z "${IMGNAME}" ]; then
     echo "please enter image-name as first param"
     exit 1
 fi
 
-if [ -z "${PORTMAP}" ]; then
+if ([ -z "${PORTMAP}" ] && [ "${ISCLOUD}" != "1" ]); then
+
     echo "please enter port-mapping for django server (e.g. 80:8092) as second param"
     exit 1
 fi
@@ -15,5 +17,11 @@ fi
 CONTAINERPREFIX="${IMGNAME//\//_}" # replace escaped slash '/' with '_'
 CONTAINERPREFIX="${CONTAINERPREFIX//\:/_}" # replace escaped colon ':' with '_'
 
-docker run -id --name ${CONTAINERPREFIX}_other ${IMGNAME}
-docker run -id --name ${CONTAINERPREFIX}_service -p ${PORTMAP} ${IMGNAME}
+echo -e "\ncreate and run container(s)\n"
+if [[ "${ISCLOUD}" == "1" ]]; then
+    docker run -id --name ${CONTAINERPREFIX}_service ${IMGNAME}
+else
+    # on the local machine
+    docker run -id --name ${CONTAINERPREFIX}_service -p ${PORTMAP} ${IMGNAME}
+    docker run -id --name ${CONTAINERPREFIX}_other ${IMGNAME}
+fi

@@ -49,27 +49,39 @@ with container named `djapp_service`, requests made from `host`, `djapp_other` (
 - bootstrapping simply does a docker setup
     - installing docker with a package manager
     - starting the docker service as a superuser
-    - pulling the latest image
+    - pulling the latest `amd` image
     - adding user to the docker group (optional)
 
 ### troubleshoot
 
-- sending request from container `a` to `b`
+- making requests with `curl`
 
-    - getting error `Failed to connect to ip`, e.g. ip `172.17.0.2`
-        - if server is only bound to `127.0.0.1` i.e. `localhost` change to `0.0.0.0` which will bind server to all ip addresses on this network (e.g. `python manage.py runserver 0.0.0.0:port_number`)
+    - sending request from container `a` to `b`
 
-    - getting `400` status code
-        - `Bad Request (400)`
-        - check if `ALLOWED_HOSTS` has the container ip which is running the server
-        - e.g. `ALLOWED_HOSTS = ['127.0.0.1','localhost','0.0.0.0','172.17.0.2']`
-        - if list has container ip, then server throws error e.g. due to [DisallowedHost](https://docs.djangoproject.com/en/5.0/ref/exceptions/#suspiciousoperation)
+        - getting error `Failed to connect to ip`, e.g. ip `172.17.0.2`
+            - if server is only bound to `127.0.0.1` i.e. `localhost` change to `0.0.0.0` which will bind server to all ip addresses on this network (e.g. `python manage.py runserver 0.0.0.0:port_number`)
 
-- sending request from host to container `b`
+        - getting `400` status code
+            - `Bad Request (400)`
+            - check if `ALLOWED_HOSTS` has the container ip which is running the server
+            - e.g. `ALLOWED_HOSTS = ['127.0.0.1','localhost','0.0.0.0','172.17.0.2']`
+            - if list has container ip, then server throws error e.g. due to [DisallowedHost](https://docs.djangoproject.com/en/5.0/ref/exceptions/#suspiciousoperation)
 
-    - getting `operation timed out` error
-        - check if `runserver` ip is `0.0.0.0`
-        - check if `ALLOWED_HOSTS` is properly configured
-        - if above is fixed, check if port mapping is enabled on the container
-        - create/run a new container with port mapping `docker run -id -p 80:8083 djapp`
-        - > note: use port `8083` in `runserver 0.0.0.0:8083` for the server created above
+    - sending request from host to container `b`
+
+        - getting `operation timed out` error
+            - check if `runserver` ip is `0.0.0.0`
+            - check if `ALLOWED_HOSTS` is properly configured
+            - if above is fixed, check if port mapping is enabled on the container
+            - create/run a new container with port mapping `docker run -id -p 80:8083 djapp`
+            - > note: use port `8083` in `runserver 0.0.0.0:8083` for the server created above
+
+- transferring files with `scp`
+
+    - if the volume of the instance is replaced/reset in such a way that it resets the `host` key, it will display the following warning on connecting to the instance on a browser
+        - <img src="readme_img/aws-root-vol-replacement.png" width=500 alt="aws root volume replacement" title="aws root volume replacement">
+
+    - moreover, it will cause an error in `scp` due to the mismatching of the `host` key
+        - <img src="readme_img/instance-key-verification-error.png" width=500 alt="instance key verification error" title="instance key verification error">
+
+    - to fix this error, we simply need to remove the offending `host` keys from the `.ssh/known_hosts` and the `.ssh/known_hosts.old` (optional) files
