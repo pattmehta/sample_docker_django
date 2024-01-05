@@ -37,8 +37,11 @@ CACHES = {
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = envconfig.value('SECRET_KEY')
+ENV_HOST = "CLOUD_PUBLIC_HOST"
+CLOUD_PUBLIC_HOST = envconfig.value(ENV_HOST)
 ALLOWED_HOSTS = ['127.0.0.1','localhost','0.0.0.0','10.0.2.2']
 ALLOWED_HOSTS.extend([f'172.17.0.{i}' for i in range(2,100)]) # 2 ips reserved for subnet(0), gateway(1)
+if CLOUD_PUBLIC_HOST is not None: ALLOWED_HOSTS.append(str(CLOUD_PUBLIC_HOST))
 ROOT_URLCONF = 'temph.urls'
 WSGI_APPLICATION = 'temph.wsgi.application'
 LANGUAGE_CODE = 'en-us'

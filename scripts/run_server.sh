@@ -9,7 +9,11 @@ P3PATH=`which python3`
 PORT=$1
 HOST=$2
 DEV=$3
+ISCLOUD=$4
+CLOUDPUBLICHOST=$5
 PYTHONCMD=""
+
+echo "(note: allows extra params for cloud host)"
 
 if [ -z "${PORT}" ]; then
     echo "please enter port-num as first param"
@@ -33,7 +37,11 @@ else
     HOST="0.0.0.0"
 fi
 
-# pass dev as third param to use settings_base
+if ([ "${HOST}" != "host" ] && [ "${ISCLOUD}" == "1" ] && [ -z "${CLOUDPUBLICHOST}" ]); then
+    echo "please enter cloud-public-host as fifth param"
+    exit 1
+fi
+
 if [ "${DEV}" == "dev" ]; then
     DEV="settings_base"
 else
@@ -44,6 +52,10 @@ if [ -z "${P3PATH}" ]; then
     PYTHONCMD="python"
 else
     PYTHONCMD="python3"
+fi
+
+if ([ "${HOST}" != "host" ] && [ "${ISCLOUD}" == "1" ]); then
+    ${PYTHONCMD} manage.py init_server --settings=temph.${DEV} ${CLOUDPUBLICHOST}
 fi
 
 ${PYTHONCMD} manage.py runserver ${HOST}:${PORT} --settings=temph.${DEV}

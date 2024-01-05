@@ -84,7 +84,7 @@ if [ -z "\${DEV}" ]; then
     exit 1
 fi
 
-sudo docker exec -it \${CONTAINERNAME} bash -c "scripts/run_server.sh ${PORT} - \${DEV}"
+sudo docker exec -it \${CONTAINERNAME} bash -c "scripts/run_server.sh ${PORT} - \${DEV} 1 ${ECHOST}"
 EOL
 
 cp scripts/host/build_container.sh "${DSTDIR}"
