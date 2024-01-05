@@ -1,6 +1,7 @@
 # Host
 *env/
 scripts/host/
+scripts/curl/requests/*.txt
 scripts/cloud/*.pem
 scripts/cloud/setup-aws.sh
 .env*

@@ -15,6 +15,9 @@ curl -X POST $DST/api/token/ -d "username=user_first&password=pwd"
 curl -G $DST/api/history/?count=2
 
 curl -X POST -d "username=user_first" $DST/api/reset_lockout/
+
+# example url for uploaded image on cloud
+# http://54.242.85.86:8192/api/media/images/user_first_img.png
 EOL
 
 DATA=`curl -X POST $DST/api/token/ -d "username=user_first&password=pwd"`

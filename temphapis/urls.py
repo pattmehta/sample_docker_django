@@ -13,5 +13,5 @@ urlpatterns = [
     path("upload_image/", views.upload_image)
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-# on localhost uploaded image is at:
+# on localhost, uploaded image is at:
 # http://127.0.0.1:8095/api/media/images/user_third_img.png

@@ -114,7 +114,7 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.UserRateThrottle'
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '1/minute',
+        'anon': '2/minute',
         'user': '5/minute'
     },
     # applies `permission_classes = (IsAuthenticated,)` to post @api_view
