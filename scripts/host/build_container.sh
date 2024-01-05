@@ -19,7 +19,7 @@ CONTAINERPREFIX="${CONTAINERPREFIX//\:/_}" # replace escaped colon ':' with '_'
 
 echo -e "\ncreate and run container(s)\n"
 if [[ "${ISCLOUD}" == "1" ]]; then
-    docker run -id --name ${CONTAINERPREFIX}_service ${IMGNAME}
+    docker run -id --name ${CONTAINERPREFIX}_service --net="host" ${IMGNAME}
 else
     # on the local machine
     docker run -id --name ${CONTAINERPREFIX}_service -p ${PORTMAP} ${IMGNAME}

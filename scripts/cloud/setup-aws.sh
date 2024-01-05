@@ -72,13 +72,19 @@ touch $RUNFILENAME
 chmod +x $RUNFILENAME
 cat > $RUNFILENAME << EOL
 CONTAINERNAME=\$1
+DEV=\$2
 
 if [ -z "\${CONTAINERNAME}" ]; then
     echo "please enter container-name as first param"
     exit 1
 fi
 
-sudo docker exec -itd \${CONTAINERNAME} bash -c "scripts/init_server.sh ${PORT} - -"
+if [ -z "\${DEV}" ]; then
+    echo "please enter 'dev' as second param (to use dev settings) or '-' (to use prod settings)"
+    exit 1
+fi
+
+sudo docker exec -it \${CONTAINERNAME} bash -c "scripts/init_server.sh ${PORT} - \${DEV}"
 EOL
 
 cp scripts/host/build_container.sh "${DSTDIR}"
