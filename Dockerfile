@@ -6,4 +6,4 @@ COPY requirements.txt ./requirements.txt
 RUN python -m pip install -r requirements.txt
 
 COPY . .
-RUN chmod +x ./scripts/init_server.sh && cp -r dst/ env/ && rm -rf dst/
+RUN chmod +x ./scripts/run_server.sh && cp -r dst/ env/ && rm -rf dst/

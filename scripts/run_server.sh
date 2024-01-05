@@ -1,9 +1,9 @@
 # with localhost:
 # - runs only on localhost
-# - bash scripts/init_server.sh port_num host dev
+# - bash scripts/run_server.sh port_num host dev
 # without localhost:
 # - binds to all ips on the machine
-# - bash scripts/init_server.sh port_num - dev
+# - bash scripts/run_server.sh port_num - dev
 
 P3PATH=`which python3`
 PORT=$1

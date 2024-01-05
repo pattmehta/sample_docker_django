@@ -45,7 +45,7 @@ with container named `djapp_service`, requests made from `host`, `djapp_other` (
 
 - currently contains script to bootstrap django app image on aws
     - the app execution is configurable via a script, see example below
-    - > docker exec -itd containername bash `-c "scripts/init_server.sh optiona optionb optionc"`
+    - > docker exec -itd containername bash `-c "scripts/run_server.sh optiona optionb optionc"`
 - bootstrapping simply does a docker setup
     - installing docker with a package manager
     - starting the docker service as a superuser
