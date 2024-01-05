@@ -1,0 +1,5 @@
+curl -X POST 54.242.85.86:8192/api/token/ -d "username=user_first&password=pwd"
+
+curl -G 54.242.85.86:8192/api/history/?count=2
+
+curl -X POST -d "username=user_first" 54.242.85.86:8192/api/reset_lockout/

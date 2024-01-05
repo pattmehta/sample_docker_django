@@ -1,0 +1,12 @@
+curl -X POST 54.242.85.86:8192/api/token/ -d "username=user_first&password=pwd"
+
+curl -X POST -d "count=5" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzA0NDkyNDA5LCJpYXQiOjE3MDQ0OTA2MDksImp0aSI6IjdjYjljYTk3MjhkYTQ3NDY5OWRkOGE0YmNkMTBhM2NlIiwidXNlcl9pZCI6MX0.UbdauUyL2qE9nu9Bg61TcITUR6TVXZk7in9XgKMM-R4" 54.242.85.86:8192/route/
+
+curl -G 54.242.85.86:8192/api/history/?count=2
+
+curl -X POST -d "count=1&username=user_first" -H "Authorization: Bearer badtoken" 54.242.85.86:8192/api/user_history/
+
+curl -X POST -d "count=1&username=user_first" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzA0NDkyNDA5LCJpYXQiOjE3MDQ0OTA2MDksImp0aSI6IjdjYjljYTk3MjhkYTQ3NDY5OWRkOGE0YmNkMTBhM2NlIiwidXNlcl9pZCI6MX0.UbdauUyL2qE9nu9Bg61TcITUR6TVXZk7in9XgKMM-R4" 54.242.85.86:8192/api/user_history/
+
+note: following curl request for upload_image was erroneous, using other clients was successful
+curl -X POST -d "username=user_first&img_data=data:image/png;base64,longdatauristring" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzA0NDkyNDA5LCJpYXQiOjE3MDQ0OTA2MDksImp0aSI6IjdjYjljYTk3MjhkYTQ3NDY5OWRkOGE0YmNkMTBhM2NlIiwidXNlcl9pZCI6MX0.UbdauUyL2qE9nu9Bg61TcITUR6TVXZk7in9XgKMM-R4" 54.242.85.86:8192/api/upload_image/
