@@ -1,7 +1,3 @@
-from rest_framework.decorators import api_view
-from django.http.request import HttpRequest
-from django.http.response import HttpResponse, JsonResponse
-from django.http import StreamingHttpResponse
 from dbservices.dbutils import dbutils
 # Following import is default due to `DEFAULT_THROTTLE_CLASSES`
 # from rest_framework.decorators import throttle_classes
@@ -19,6 +15,13 @@ from middleware.utils import utils
 from datauri import DataURI
 from django.conf import settings
 from pathlib import Path
+# imports for general request-response handling
+from rest_framework.decorators import api_view
+from django.http.request import HttpRequest
+from django.http.response import HttpResponse, JsonResponse
+from django.http import StreamingHttpResponse
+from io import BytesIO
+import json
 
 
 def token_required(func):
@@ -69,8 +72,20 @@ def index(_: HttpRequest):
 
 @api_view(['POST'])
 def token(request: HttpRequest):
-    username = request.POST.get('username')
-    password = request.POST.get('password')
+    username = None
+    password = None
+
+    if match_content_type(request.content_type, "application/json"):
+        # mobile clients use json encoders
+        obj = json_bytes_to_dict(request.body)
+        if obj is None: return HttpResponse("invalid parameters\n")
+        username = obj["username"]
+        password = obj["password"]
+    else:
+        # default content_type in web for a post request is application/x-www-form-urlencoded
+        # content_type for a curl post request (with -d flag) is also the same
+        username = request.POST.get('username')
+        password = request.POST.get('password')
     if username is None and password is None:
         return HttpResponse("invalid parameters\n")
     users = User.objects.all()
@@ -83,6 +98,35 @@ def token(request: HttpRequest):
         return HttpResponse("could not log in {username}!\n")
     except Exception:
         return HttpResponse("user not found!\n",status=301)
+
+@api_view(['POST'])
+def reset_lockout(request: HttpRequest):
+    username = request.POST.get('username')
+    ip_address = utils.get_ip(request)
+    auth_failure_key = f"LOGIN_FAILURES_{ip_address}_{username}"
+    if cache.has_key(auth_failure_key):
+        cache.set(auth_failure_key, 0)
+        return HttpResponse("lockout is reset!\n")
+    else:
+        return HttpResponse("try again later!\n")
+
+@token_required
+@api_view(['POST'])
+def upload_image(request: HttpRequest):
+    img_data = request.POST.get('img_data')
+    username = request.POST.get('username')
+    try:
+        if img_data is not None and username is not None:
+            img_uri = DataURI(img_data)
+            file_ext = img_uri.mimetype.split('/')[1]
+            output_filename = Path(settings.MEDIA_ROOT).resolve().joinpath('images').joinpath(f'{username}_img.{file_ext}')
+            with open(output_filename,'wb') as img_file: img_file.write(img_uri.data)
+            return HttpResponse("image uploaded", status=200)
+        else:
+            return HttpResponse("invalid params", status=400)
+    except Exception as e:
+        print(f"exception: {e}")
+        return HttpResponse("could not upload image", status=500)
 
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
@@ -122,31 +166,16 @@ def try_auth_with_track_attempts(request,auth_callback):
         if auth_failures() >= int(envconfig.value('AUTH_FAIL_ATTEMPTS')): raise Exception("auth lockout: too many failed attempts!")
         return error_response()
 
-@api_view(['POST'])
-def reset_lockout(request: HttpRequest):
-    username = request.POST.get('username')
-    ip_address = utils.get_ip(request)
-    auth_failure_key = f"LOGIN_FAILURES_{ip_address}_{username}"
-    if cache.has_key(auth_failure_key):
-        cache.set(auth_failure_key, 0)
-        return HttpResponse("lockout is reset!\n")
-    else:
-        return HttpResponse("try again later!\n")
-
-@token_required
-@api_view(['POST'])
-def upload_image(request: HttpRequest):
-    img_data = request.POST.get('img_data')
-    username = request.POST.get('username')
+def json_bytes_to_dict(bytes):
+    SIZE_LIMIT = 500
     try:
-        if img_data is not None and username is not None:
-            img_uri = DataURI(img_data)
-            file_ext = img_uri.mimetype.split('/')[1]
-            output_filename = Path(settings.MEDIA_ROOT).resolve().joinpath('images').joinpath(f'{username}_img.{file_ext}')
-            with open(output_filename,'wb') as img_file: img_file.write(img_uri.data)
-            return HttpResponse("image uploaded", status=200)
-        else:
-            return HttpResponse("invalid params", status=400)
-    except Exception as e:
-        print(f"exception: {e}")
-        return HttpResponse("could not upload image", status=500)
+        bytes_stream = BytesIO(bytes)
+        if len(bytes) > SIZE_LIMIT: return None
+        if not bytes.isascii(): return None
+        return json.load(bytes_stream)
+
+    except: return None
+
+def match_content_type(src_content_type, target_content_type):
+    if src_content_type is None or len(src_content_type) < 1: return False
+    return src_content_type.lower() == target_content_type.lower()
