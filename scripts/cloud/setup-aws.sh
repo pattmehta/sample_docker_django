@@ -52,6 +52,7 @@ EOL
 ## cloud files generation
 
 AWSFILENAME="${DSTDIR}"/aws.sh
+AWSIMGTAGNAME="amd"
 touch $AWSFILENAME
 chmod +x $AWSFILENAME
 cat > $AWSFILENAME << EOL
@@ -59,7 +60,8 @@ IMGNAME=\$1
 HASYUM=\`which yum\`
 
 if [ -z "\${IMGNAME}" ]; then
-    echo "please enter image-name as first param"
+    echo -e "please enter image-name (without tag) as first param"
+    echo -e "\n(note: tag ${AWSIMGTAGNAME} will be auto-selected on aws)\n"
     exit 1
 fi
 
@@ -73,13 +75,13 @@ sudo yum install -y docker
 # might require terminal restart
 sudo usermod -aG docker ${ECUSERNAME}
 sudo service docker start
-sudo docker pull \${IMGNAME}:amd
+sudo docker pull \${IMGNAME}:${AWSIMGTAGNAME}
 
 USERADDED=\`less /etc/group | grep docker\`
 if [[ "\${USERADDED}" =~ ^.*${ECUSERNAME}\$ ]]; then
     sudo docker image ls
     # pass blank value, i.e. - for PORTMAP, and 1 for ISCLOUD
-    sudo scripts/build_container.sh \${IMGNAME}:amd - 1
+    sudo scripts/build_container.sh \${IMGNAME}:${AWSIMGTAGNAME} - 1
     sudo docker container ls -a
 else
     echo "user not added to docker group, cannot run docker"

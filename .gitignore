@@ -8,6 +8,7 @@ dst/
 .env*
 media/images/*.png
 scripts/cloud/*.pem
+scripts/cloud/backup.sh
 scripts/curl/requests/*.txt
 
 

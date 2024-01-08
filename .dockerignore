@@ -2,8 +2,7 @@
 *env/
 scripts/host/
 scripts/curl/requests/*.txt
-scripts/cloud/*.pem
-scripts/cloud/setup-aws.sh
+scripts/cloud/
 .env*
 media/images/*.png
 tmp/
