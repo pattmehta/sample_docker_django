@@ -6,7 +6,7 @@ scripts/cloud/*.pem
 scripts/cloud/setup-aws.sh
 .env*
 media/images/*.png
-
+tmp/
 
 # Docker
 docker-compose.yml

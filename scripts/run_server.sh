@@ -55,6 +55,7 @@ else
 fi
 
 if ([ "${HOST}" != "host" ] && [ "${ISCLOUD}" == "1" ]); then
+    echo "(note: using extra params for cloud host ${CLOUDPUBLICHOST})"
     ${PYTHONCMD} manage.py init_server --settings=temph.${DEV} ${CLOUDPUBLICHOST}
 fi
 
