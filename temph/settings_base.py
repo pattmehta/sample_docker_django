@@ -53,7 +53,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField' # Default primary key field
 STATICFILES_DIRS = (str(BASE_DIR.joinpath('static')),)
 STATIC_URL = 'static/'
 MEDIA_URL = 'media/'
-MEDIA_ROOT = str(BASE_DIR.joinpath('media'))
+MEDIA_ROOT = str(BASE_DIR.joinpath('storage').joinpath('media'))
 
 
 INSTALLED_APPS = [
@@ -94,7 +94,7 @@ TEMPLATES = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR.joinpath('storage').resolve() / 'db.sqlite3',
     }
 }
 # DATABASES = {
@@ -114,7 +114,7 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.UserRateThrottle'
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '2/minute',
+        'anon': '4/minute',
         'user': '5/minute'
     },
     # applies `permission_classes = (IsAuthenticated,)` to post @api_view
