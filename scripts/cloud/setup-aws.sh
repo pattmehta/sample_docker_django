@@ -31,6 +31,26 @@ DSTDIR=tmp/scripts
 
 mkdir -p "${DSTDIR}"
 
+## backup script generation
+
+CURRENTFILEPATH=`realpath $0`
+PARENTFOLDER=`dirname $CURRENTFILEPATH`
+BACKUPFILEPATH=$PARENTFOLDER"/backup.sh"
+touch $BACKUPFILEPATH
+chmod +x $BACKUPFILEPATH
+cat > $BACKUPFILEPATH << EOL
+TIMESTAMP=\$(date +%T)
+TIMESTAMPSTR="\${TIMESTAMP//:/_}"
+PARENTFOLDERPATH=`dirname \$PWD`
+BACKUPFOLDERPATH=\${PARENTFOLDERPATH}"/backup/"\${TIMESTAMPSTR}
+
+mkdir -p \${BACKUPFOLDERPATH}
+
+scp -i "${PATHTOPEMFILE}" -r "${ECUSERNAME}"@"${ECHOST}":/home/"${ECUSERNAME}"/backup \${BACKUPFOLDERPATH}
+EOL
+
+## cloud files generation
+
 AWSFILENAME="${DSTDIR}"/aws.sh
 touch $AWSFILENAME
 chmod +x $AWSFILENAME
@@ -88,6 +108,8 @@ sudo docker exec -it \${CONTAINERNAME} bash -c "scripts/run_server.sh ${PORT} - 
 EOL
 
 cp scripts/host/build_container.sh "${DSTDIR}"
+
+## copy files to cloud
 
 scp -i "${PATHTOPEMFILE}" -r "${DSTDIR}" "${ECUSERNAME}"@"${ECHOST}":/home/"${ECUSERNAME}"
 

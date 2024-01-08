@@ -19,7 +19,12 @@ CONTAINERPREFIX="${CONTAINERPREFIX//\:/_}" # replace escaped colon ':' with '_'
 
 echo -e "\ncreate and run container(s)\n"
 if [[ "${ISCLOUD}" == "1" ]]; then
-    docker run -id --name ${CONTAINERPREFIX}_service --net="host" ${IMGNAME}
+    PARENTFOLDERPATH=`dirname $PWD`
+    BACKUPFOLDERPATH=${PARENTFOLDERPATH}"/backup"
+    mkdir -p ${BACKUPFOLDERPATH}
+    CONTAINERSTORAGE="/app/storage"
+    echo -e "adds mount with (host) source ${BACKUPFOLDERPATH} and (container) target ${CONTAINERSTORAGE}\n"
+    docker run -id --name ${CONTAINERPREFIX}_service --net="host" -v ${BACKUPFOLDERPATH}:${CONTAINERSTORAGE} ${IMGNAME}
 else
     # on the local machine
     docker run -id --name ${CONTAINERPREFIX}_service -p ${PORTMAP} ${IMGNAME}
