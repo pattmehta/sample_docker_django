@@ -52,6 +52,13 @@ with container named `djapp_service`, requests made from `host`, `djapp_other` (
     - pulling the latest `amd` image
     - adding user to the docker group (optional)
 
+### backup
+
+- > docker `-v` flag can be used to bind a storage path on `host` to a path on a docker `container`
+- > remote client can `scp` this, say `backup` storage path, from `host` to a `local` path
+- > accordingly, project tried to bind `backup` storage path on aws at `/home/ec2-user` to `/app/storage` on the container; this was removed as it would erase content in the `storage` folder (`db` file, and `media` folder) on the container during `docker run -v` stage
+- so, the project has a different backup method which uses `docker cp` command
+
 ### troubleshoot
 
 - making requests with `curl`

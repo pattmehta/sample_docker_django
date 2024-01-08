@@ -39,14 +39,26 @@ BACKUPFILEPATH=$PARENTFOLDER"/backup.sh"
 touch $BACKUPFILEPATH
 chmod +x $BACKUPFILEPATH
 cat > $BACKUPFILEPATH << EOL
+CONTAINERNAME=\$1
+
+if [ -z "\${CONTAINERNAME}" ]; then
+    echo "please enter container-name as first param"
+    exit 1
+fi
+
 TIMESTAMP=\$(date +%T)
-TIMESTAMPSTR="\${TIMESTAMP//:/_}"
+TIMESTAMPSTR="\${TIMESTAMP//:/_}" # generate unique backup folder name
+
 PARENTFOLDERPATH=`dirname \$PWD`
-BACKUPFOLDERPATH=\${PARENTFOLDERPATH}"/backup/"\${TIMESTAMPSTR}
+BACKUPFOLDERPATHDST=\${PARENTFOLDERPATH}"/backup"
+BACKUPFOLDERPATHSRC="~/backup/"\${TIMESTAMPSTR}
 
-mkdir -p \${BACKUPFOLDERPATH}
-
-scp -i "${PATHTOPEMFILE}" -r "${ECUSERNAME}"@"${ECHOST}":/home/"${ECUSERNAME}"/backup \${BACKUPFOLDERPATH}
+# ssh to remote and create a named backup folder and docker copy
+REMOTECMD="mkdir -p \${BACKUPFOLDERPATHSRC} && chmod 755 \${BACKUPFOLDERPATHSRC} && ~/scripts/docker_copy.sh \${CONTAINERNAME} \${BACKUPFOLDERPATHSRC}"
+ssh -i "${PATHTOPEMFILE}" "${ECUSERNAME}"@"${ECHOST}" "\${REMOTECMD}"
+mkdir -p \${BACKUPFOLDERPATHDST} # create a local backup folder if it does not exist
+# scp named backup folder to local backup folder
+scp -i "${PATHTOPEMFILE}" -r "${ECUSERNAME}"@"${ECHOST}":"\${BACKUPFOLDERPATHSRC}" "\${BACKUPFOLDERPATHDST}"
 EOL
 
 ## cloud files generation
@@ -110,6 +122,7 @@ sudo docker exec -it \${CONTAINERNAME} bash -c "scripts/run_server.sh ${PORT} - 
 EOL
 
 cp scripts/host/build_container.sh "${DSTDIR}"
+cp scripts/host/docker_copy.sh "${DSTDIR}"
 
 ## copy files to cloud
 
