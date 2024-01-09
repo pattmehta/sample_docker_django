@@ -144,7 +144,11 @@ def get_tokens_for_user(user):
 
 def try_auth_with_track_attempts(request,auth_callback):
     ip_address = utils.get_ip(request)
-    username = request.POST.get('username')
+    username = None
+
+    try: username, *_ = get_parsed_values(request, 'username')
+    except Exception: raise Exception("invalid params")
+
     auth_failure_key = f"LOGIN_FAILURES_{ip_address}_{username}"
     auth_failures = lambda: cache.get(auth_failure_key) or 0
     error_response = lambda: {"success":False,"auth_failures":auth_failures()}
