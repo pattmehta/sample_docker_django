@@ -173,22 +173,21 @@ def try_auth_with_track_attempts(request,auth_callback):
         return error_response()
 
 def get_parsed_values(request, *params):
-    if match_content_type(request.content_type, "application/json"):
-        # mobile clients use json encoders
-        obj = json_bytes_to_dict(request.body)
-        return tuple(obj[param] for param in params)
-    else:
-        post_param = lambda param: request.POST.get(param)
-        return tuple(post_param(param) for param in params)
+    try:
+        if match_content_type(request.content_type, "application/json"):
+            # mobile clients use json encoders
+            obj = json_bytes_to_dict(request.body)
+            return tuple(obj[param] for param in params)
+        else:
+            post_param = lambda param: request.POST.get(param)
+            return tuple(post_param(param) for param in params)
+    except Exception as e: raise Exception(f"invalid params: {str(e)}")
 
 def json_bytes_to_dict(bytes):
-    SIZE_LIMIT = 500
     try:
         bytes_stream = BytesIO(bytes)
-        if len(bytes) > SIZE_LIMIT: return None
         if not bytes.isascii(): return None
         return json.load(bytes_stream)
-
     except: return None
 
 def match_content_type(src_content_type, target_content_type):

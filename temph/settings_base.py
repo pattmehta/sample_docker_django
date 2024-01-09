@@ -10,6 +10,7 @@ from envconfig import envconfig
 
 
 DEBUG = True
+DATA_UPLOAD_MAX_MEMORY_SIZE = 15728640
 
 LOGGING = {
     "version": 1,

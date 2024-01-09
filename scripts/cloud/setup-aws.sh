@@ -46,7 +46,7 @@ if [ -z "\${CONTAINERNAME}" ]; then
     exit 1
 fi
 
-TIMESTAMP=\$(date +%T)
+TIMESTAMP=\$(date +'%Y-%m-%d-%H-%M')
 TIMESTAMPSTR="\${TIMESTAMP//:/_}" # generate unique backup folder name
 
 PARENTFOLDERPATH=`dirname \$PWD`
