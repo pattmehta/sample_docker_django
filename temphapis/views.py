@@ -56,6 +56,9 @@ def history(request: HttpRequest):
 # @throttle_classes([UserRateThrottle])
 def user_history(request: HttpRequest):
     request_user = request.user
+    count = None
+    try: count, *_ = get_parsed_values(request, 'count')
+    except Exception: return make_result("invalid params", False, 400)
     if request_user is not None and request_user.is_active:
         count = request.POST.get('count')
         if count is None: count = 5
@@ -75,19 +78,9 @@ def token(request: HttpRequest):
     username = None
     password = None
 
-    if match_content_type(request.content_type, "application/json"):
-        # mobile clients use json encoders
-        obj = json_bytes_to_dict(request.body)
-        if obj is None: return HttpResponse("invalid parameters\n")
-        username = obj["username"]
-        password = obj["password"]
-    else:
-        # default content_type in web for a post request is application/x-www-form-urlencoded
-        # content_type for a curl post request (with -d flag) is also the same
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-    if username is None and password is None:
-        return HttpResponse("invalid parameters\n")
+    try: username, password, *_ = get_parsed_values(request, 'username', 'password')
+    except Exception: return make_result("invalid params", False, 400)
+
     users = User.objects.all()
     try:
         request_user = users.get(username=username)
@@ -101,7 +94,11 @@ def token(request: HttpRequest):
 
 @api_view(['POST'])
 def reset_lockout(request: HttpRequest):
-    username = request.POST.get('username')
+    username = None
+
+    try: username, *_ = get_parsed_values(request, 'username')
+    except Exception: return make_result("invalid params", False, 400)
+
     ip_address = utils.get_ip(request)
     auth_failure_key = f"LOGIN_FAILURES_{ip_address}_{username}"
     if cache.has_key(auth_failure_key):
@@ -113,20 +110,25 @@ def reset_lockout(request: HttpRequest):
 @token_required
 @api_view(['POST'])
 def upload_image(request: HttpRequest):
-    img_data = request.POST.get('img_data')
-    username = request.POST.get('username')
+    img_data = None
+    img_name = None
+    username = None
+
+    try: img_data, img_name, username, *_ = get_parsed_values(request, 'img_data', 'img_name', 'username')
+    except Exception: return make_result("invalid params", False, 400)
+
     try:
         if img_data is not None and username is not None:
             img_uri = DataURI(img_data)
             file_ext = img_uri.mimetype.split('/')[1]
-            output_filename = Path(settings.MEDIA_ROOT).resolve().joinpath('images').joinpath(f'{username}_img.{file_ext}')
+            output_filename = Path(settings.MEDIA_ROOT).resolve().joinpath('images').joinpath(f'{username}_img_{img_name}.{file_ext}')
             with open(output_filename,'wb') as img_file: img_file.write(img_uri.data)
-            return HttpResponse("image uploaded", status=200)
+            return make_result("image uploaded", True, 200)
         else:
-            return HttpResponse("invalid params", status=400)
+            return make_result("invalid params", False, 400)
     except Exception as e:
         print(f"exception: {e}")
-        return HttpResponse("could not upload image", status=500)
+        return make_result("could not upload image", False, 500)
 
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
@@ -166,6 +168,15 @@ def try_auth_with_track_attempts(request,auth_callback):
         if auth_failures() >= int(envconfig.value('AUTH_FAIL_ATTEMPTS')): raise Exception("auth lockout: too many failed attempts!")
         return error_response()
 
+def get_parsed_values(request, *params):
+    if match_content_type(request.content_type, "application/json"):
+        # mobile clients use json encoders
+        obj = json_bytes_to_dict(request.body)
+        return tuple(obj[param] for param in params)
+    else:
+        post_param = lambda param: request.POST.get(param)
+        return tuple(post_param(param) for param in params)
+
 def json_bytes_to_dict(bytes):
     SIZE_LIMIT = 500
     try:
@@ -179,3 +190,7 @@ def json_bytes_to_dict(bytes):
 def match_content_type(src_content_type, target_content_type):
     if src_content_type is None or len(src_content_type) < 1: return False
     return src_content_type.lower() == target_content_type.lower()
+
+def make_result(message,success,code):
+    print(message)
+    return JsonResponse({"success": success, "detail": message}, status=code)
